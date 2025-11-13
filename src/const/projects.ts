@@ -2,8 +2,8 @@ import type { Project } from "@/types/content";
 
 export const PROJECTS: Project[] = [
   {
-    id: "burbuclean",
-    title: "Burbuclean",
+    id: "burbucleann",
+    title: "Burbucleann",
     description: "Landing animada con efectos de vidrio y componentes de conversión.",
     stack: ["Next.js", "Tailwind v4", "SEO"],
     image: "/assets/project-placeholder-1.jpg",
@@ -18,8 +18,8 @@ export const PROJECTS: Project[] = [
     link: "#",
   },
   {
-    id: "ferco",
-    title: "Ferco Medical",
+    id: "santy",
+    title: "Reformas y construcciones Santy",
     description: "Catálogo e-commerce con filtros, SSR y optimización de caché.",
     stack: ["Next.js", "Edge", "Analytics"],
     image: "/assets/project-placeholder-3.jpg",

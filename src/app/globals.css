@@ -2,7 +2,7 @@
 
 /* ============ TOKENS (Tailwind v4) ============ */
 :root {
-  --nav-height: 72px;
+  --nav-height: 84px;
 }
 
 @theme inline {
@@ -84,9 +84,9 @@ body {
   content:""; position:absolute; top:-40%; bottom:-40%; left:-30%; width:55%;
   background:
     radial-gradient(45% 60% at 50% 50%,
-      #22d3eecc 0%,  /* cyan fuerte */
+      #22eeb1cc 0%,  /* cyan fuerte */
       #3b82f6b3 35%, /* azul */
-      #ec489980 65%, /* magenta */
+      #2c168f80 65%, /* magenta */
       #10b98166 85%, /* verde */
       transparent 100%);
   filter: saturate(180%) brightness(1.15) blur(24px);
@@ -203,4 +203,289 @@ header{ background: rgba(2,6,23,0.18); }     /* base oscura sutil */
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
   background: linear-gradient(180deg, rgba(255,255,255,.18), transparent 40%);
   mix-blend-mode: screen; opacity:.7;
+}
+
+/* ===== Hero dynamic background ===== */
+
+/* Animated gradient mesh */
+.hero-mesh {
+  background: radial-gradient(40rem 40rem at 10% 10%, rgba(16,185,129,0.18), transparent 60%),
+              radial-gradient(36rem 36rem at 85% 20%, rgba(59,130,246,0.18), transparent 60%),
+              radial-gradient(30rem 30rem at 40% 85%, rgba(34,197,94,0.16), transparent 60%),
+              linear-gradient(120deg, rgba(2,6,23,0.9), rgba(2,6,23,0.9)); /* base layer */
+  background-size: 140% 140%;
+  animation: heroGradient 18s ease-in-out infinite;
+  will-change: background-position, transform;
+}
+
+/* Soft grid with radial mask */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(closest-side, black 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(closest-side, black 60%, transparent 100%);
+}
+
+/* Subtle film grain */
+.hero-noise {
+  background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'>\
+    <filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter>\
+    <rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/>\
+  </svg>");
+  background-size: 220px 220px;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes heroGradient {
+  0%   { background-position: 0% 40%; }
+  50%  { background-position: 100% 60%; }
+  100% { background-position: 0% 40%; }
+}
+
+/* ===== Estilo unificado de Cards (BitAndes Aurora) ===== */
+.card {
+  background: linear-gradient(145deg, #1e293b 0%, #312e81 80%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.28);
+  color: #f8fafc;
+  transition: all 0.35s ease;
+}
+
+/* Hover: resalta con cian–violeta */
+.card:hover {
+  background: linear-gradient(145deg, #0ea5e9 0%, #6366f1 90%);
+  border-color: rgba(34, 211, 238, 0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(14, 165, 233, 0.35);
+}
+
+/* Títulos y textos */
+.card h3 {
+  color: #f1f5f9;
+}
+.card p {
+  color: #cbd5e1;
+}
+
+/* ===== Badges (más fríos, coherentes con el hero) ===== */
+.badge-soft {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #e0f2fe;
+  backdrop-filter: blur(6px);
+}
+
+/* ===== Botón CTA dentro de card ===== */
+.btn-brand {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  color: #f8fafc;
+  font-weight: 600;
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-brand:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 36px rgba(14, 165, 233, 0.55);
+}
+
+/* background service*/
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+/* ===== Card system ===== */
+.card {
+  /* variables por defecto (seguras) */
+  --card-bg: var(--color-card);
+  --card-border: rgba(255,255,255,.10);
+  --card-shadow: none;
+  --card-radius: var(--radius-xl);
+
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  color: #f8fafc;
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease;
+}
+
+/* —— VARIANTE: plana, sin brillo (ideal Contact) —— */
+.card--flat {
+  --card-bg: #0b1220;            /* sólido y oscuro */
+  --card-border: rgba(255,255,255,.08);
+  --card-shadow: none;
+  filter: none;
+}
+.card--flat::before,
+.card--flat::after { display:none !important; } /* por si alguna card usa pseudo-elementos */
+
+/* —— VARIANTE: elevada (tu diseño aurora) —— */
+.card--elevated {
+  --card-bg: linear-gradient(145deg, #1e293b 0%, #312e81 80%);
+  --card-border: rgba(255,255,255,.08);
+  --card-shadow: 0 18px 45px rgba(2,6,23,.28);
+}
+.card--elevated:hover {
+  --card-bg: linear-gradient(145deg, #0ea5e9 0%, #6366f1 90%);
+  --card-border: rgba(34,211,238,.40);
+  box-shadow: 0 16px 48px rgba(14,165,233,.35);
+  transform: translateY(-6px);
+}
+
+/* —— VARIANTE: glass (translúcida, sin resplandor extra) —— */
+.card--glass {
+  --card-bg: rgba(15,23,42,.55);
+  --card-border: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px) saturate(115%);
+  -webkit-backdrop-filter: blur(8px) saturate(115%);
+  /* sin sombras fuertes */
+}
+
+/* —— VARIANTE: outline mínima —— */
+.card--outline {
+  --card-bg: transparent;
+  --card-border: rgba(255,255,255,.12);
+  --card-shadow: none;
+}
+
+/* ===== Contact Premium (sin .card) ===== */
+
+/* Contenedor de cada panel */
+.contact-panel {
+  --cp-bg: #0e1625;                       /* superficie */
+  --cp-bg2: #121a2a;                      /* gradiente muy sutil */
+  --cp-border: rgba(255,255,255,.08);     /* borde base */
+  --cp-radius: 16px;
+
+  position: relative;
+  border-radius: var(--cp-radius);
+  background: linear-gradient(180deg, var(--cp-bg), var(--cp-bg2));
+  border: 1px solid var(--cp-border);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+
+/* “Anillo” de 1px con degradado fino (no glow) */
+.contact-panel::before{
+  content:"";
+  position:absolute; inset:0; border-radius:inherit; padding:1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.35), rgba(120,180,255,.30), rgba(255,255,255,.35));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events:none; opacity:.5;
+}
+
+/* Hover mínimo, sin levantar demasiado */
+.contact-panel:hover{
+  border-color: rgba(148,163,184,.30);
+  transform: translateY(-2px);
+}
+
+/* Padding utilitario para no depender de .card */
+.contact-pad { padding: 1.5rem; }
+@media (min-width: 768px){ .contact-pad { padding: 1.75rem; } }
+
+/* Campos del formulario */
+.contact-field{
+  width:100%;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  padding: .65rem .85rem;
+  color: #e5e7eb;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.contact-field::placeholder{ color: #94a3b8; }
+
+.contact-field:focus{
+  outline: none;
+  border-color: rgba(56,189,248,.55);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.18);
+  background: rgba(255,255,255,.055);
+}
+
+/* Textarea altura base */
+.contact-textarea{ min-height: 7.25rem; resize: vertical; }
+
+/* Línea divisoria elegante bajo el título */
+.contact-divider{
+  height:1px; width:100%;
+  background: linear-gradient(to right, rgba(255,255,255,.10), rgba(255,255,255,.04), transparent);
+  margin-top: .75rem;
+}
+
+/* Lista de datos (lado derecho) */
+.contact-list{ display:grid; gap:.5rem; font-size:.95rem; color:#cbd5e1; }
+.contact-list a{ text-decoration: underline; }
+
+/* Panel claro alternativo (por si quieres contrastar el derecho) */
+.contact-panel--alt{
+  --cp-bg: #121a2a;
+  --cp-bg2: #141e30;
+  --cp-border: rgba(255,255,255,.10);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .metric-tile {
+    @apply relative rounded-2xl p-[1px] overflow-hidden
+           bg-gradient-to-br from-white/15 via-white/5 to-white/10
+           before:absolute before:inset-0 before:rounded-2xl
+           before:bg-[radial-gradient(80%_60%_at_30%_0%,rgba(255,255,255,0.08),transparent)]
+           before:pointer-events-none;
+  }
+  .metric-tile > .metric-content {
+    @apply relative z-[1] rounded-[1rem] border border-white/10
+           bg-white/[0.06] px-4 py-4 text-center
+           shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_24px_rgba(2,6,23,0.35)]
+           transition-transform duration-300;
+  }
+  .metric-big {
+    @apply text-2xl font-bold tracking-tight text-white;
+  }
+  .metric-small {
+    @apply mt-1 text-xs text-white/70;
+  }
+
+  /* halo animado al hover */
+  .metric-glow {
+    @apply absolute -inset-[1px] rounded-2xl opacity-0 transition-opacity duration-300;
+    background:
+      radial-gradient(60% 60% at 30% 0%, rgba(59,130,246,.25), transparent 60%),
+      radial-gradient(60% 60% at 70% 100%, rgba(16,185,129,.25), transparent 60%);
+  }
+  .metric-tile:hover .metric-glow { @apply opacity-100; }
+  .metric-tile:hover .metric-content { transform: translateY(-2px); }
+
+  /* “shine” diagonal sutil */
+  .metric-content::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 rounded-[1rem] opacity-0 transition-opacity duration-300;
+    background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.12) 40%, transparent 60%);
+    mask-image: radial-gradient(120% 100% at 0% 0%, #000 60%, transparent 70%);
+  }
+  .metric-tile:hover .metric-content::after { @apply opacity-100; }
 }

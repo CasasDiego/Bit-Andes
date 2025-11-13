@@ -45,17 +45,17 @@ export default function Navbar() {
       <nav className="relative z-10 container-x h-full flex items-center justify-between gap-4">
         {/* LOGO con pill de vidrio */}
         <Link href="/" className="group relative flex items-center" aria-label="Ir al inicio">
-          <div className="logo-pill p-1.5">
-            <div className="relative h-8 w-28 md:h-10 md:w-36">
-              <Image
+        <div className="logo-pill px-1.5 py-0.5 rounded-2xl overflow-hidden">
+            <div className="relative h-10 w-36 md:h-18 md:w-48 rounded-xl overflow-hidden">
+            <Image
                 src="/assets/logobit.png"
                 alt="BitAndes"
                 fill
-                className="object-contain"
+                className="object-cover rounded-xl drop-shadow-[0_0_6px_rgba(0,0,0,0.45)]"
                 priority
-              />
+            />
             </div>
-          </div>
+        </div>
         </Link>
 
         {/* MENÚ DESKTOP */}
@@ -103,41 +103,51 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* DRAWER MÓVIL */}
-      <div
-        className={`relative z-10 md:hidden transition-[max-height] overflow-hidden border-t border-white/10 ${
-          open ? "max-h-[60vh]" : "max-h-0"
-        }`}
-      >
-        <div className="relative">
-          <div
+        {/* DRAWER MÓVIL */}
+        <div
+        className={`md:hidden fixed top-[var(--nav-height)] inset-x-0 z-[70]
+                    transition-[max-height] duration-500 ease-in-out
+                    ${open ? "max-h-[calc(100dvh-var(--nav-height))]" : "max-h-0"}
+                    bg-slate-950/90 backdrop-blur-xl border-t border-white/10
+                    overflow-y-auto overscroll-contain`}
+        >
+        <div className="relative px-4 py-6 space-y-4 animate-[fadeIn_0.4s_ease-out]">
+            <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 -top-3 h-6 bg-gradient-to-b from-[var(--color-brand)/25] to-transparent blur-xl"
-          />
-          <ul className="container-x py-4 grid gap-2">
-            {NAV.map((i) => (
-              <li key={i.href}>
+            />
+
+            <ul className="grid gap-3">
+            {NAV.map((i, idx) => (
+                <li key={i.href} className="animate-[slideIn_0.3s_ease-out_forwards]" style={{ animationDelay: `${idx * 0.05}s` }}>
                 <a
-                  href={i.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm opacity-90 hover:opacity-100"
+                    href={i.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-gradient-to-r from-white/5 to-white/[0.03]
+                            px-4 py-3 text-base text-slate-100 font-medium hover:bg-white/10 hover:border-white/20 transition-all"
                 >
-                  {i.label}
+                    <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-brand)] shadow-[0_0_8px_var(--color-brand)]" />
+                    {i.label}
                 </a>
-              </li>
+                </li>
             ))}
-            <li>
-              <a
+            </ul>
+
+            <div className="pt-4 border-t border-white/10">
+            <a
                 href={SITE.cta.href}
                 onClick={() => setOpen(false)}
-                className="btn btn-brand w-full"
-              >
+                className="relative block text-center rounded-xl py-3 font-semibold
+                        bg-gradient-to-r from-[var(--color-brand)] to-[var(--color-brand-2)]
+                        text-white shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:opacity-90 transition"
+            >
                 {SITE.cta.label}
-              </a>
-            </li>
-          </ul>
+            </a>
+            </div>
         </div>
-      </div>
+        </div>
+
+
     </header>
   );
 }
