@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+/* ============ TOKENS (Tailwind v4) ============ */
+:root {
+  --nav-height: 72px;
+}
+
+@theme inline {
+  --color-brand: #10b981;         /* verde BitAndes */
+  --color-brand-2: #ec4899;       /* magenta para CTAs */
+  --color-bg: #0b1220;            /* fondo oscuro */
+  --color-card: #0f172a;          /* cards */
+  --color-fg: #e5e7eb;            /* texto base */
+  --radius-xl: 1rem;
+  --shadow-soft: 0 18px 45px rgba(2, 6, 23, .28);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* ============ RESETEOS + BASE ============ */
+html, body { height: 100%; }
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
+.container-x {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  max-width: 1100px;
+}
+
+/* utilidades pequeñas */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: .65rem 1rem; border-radius: calc(var(--radius-xl) + .25rem);
+  font-weight: 600;
+}
+.btn-brand { background: var(--color-brand); color: #00110b; }
+.btn-ghost { background: #ffffff12; border: 1px solid #ffffff22; }
+
+.card {
+  background: var(--color-card);
+  border: 1px solid #ffffff10;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
+/* ===== Capa de color base (azul/cyan/magenta/verde) ===== */
+.navbg{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(90deg,
+      rgba(34,211,238,.22) 0%,
+      rgba(59,130,246,.24) 35%,
+      rgba(236,72,153,.22) 65%,
+      rgba(16,185,129,.24) 100%);
+  filter: saturate(140%) brightness(1.08);
+  opacity:.9;               /* sube/baja para gusto */
+}
+
+/* ===== Grid vívido + efecto glass ===== */
+.navgrid{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+
+/* Líneas del grid con color real (no gris) */
+.navgrid::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    /* líneas verticales */
+    linear-gradient(to right, rgba(56,189,248,.35) 1px, transparent 1px),
+    /* líneas horizontales */
+    linear-gradient(to bottom, rgba(37,99,235,.28) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity:.9;                          /* 🔵 más presencia */
+  backdrop-filter: blur(2px) saturate(120%);
+  mix-blend-mode: normal;              /* 👈 no “apaga” el color */
+  /* máscara más suave para que no desaparezca el color */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+
+/* Haz aurora con más punch y menos atenuación */
+.navgrid::after{
+  content:""; position:absolute; top:-40%; bottom:-40%; left:-30%; width:55%;
+  background:
+    radial-gradient(45% 60% at 50% 50%,
+      #22d3eecc 0%,  /* cyan fuerte */
+      #3b82f6b3 35%, /* azul */
+      #ec489980 65%, /* magenta */
+      #10b98166 85%, /* verde */
+      transparent 100%);
+  filter: saturate(180%) brightness(1.15) blur(24px);
+  mix-blend-mode: screen;   /* mantiene luces intensas sobre fondo oscuro */
+  opacity:0;                /* aparece al animar */
+  /* máscara lateral más ancha pero suave */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+
+/* Barrido + ciclo de color (prisma) */
+@keyframes nav-sweep{
+  0%{ transform:translateX(-40%); opacity:0 }
+  15%{ opacity:.9 }
+  40%{ opacity:.9 }
+  60%{ opacity:.2 }
+  100%{ transform:translateX(140%); opacity:0 }
+}
+@keyframes prism-hue{
+  0%{ filter: saturate(180%) brightness(1.15) blur(24px) hue-rotate(0deg) }
+  50%{ filter: saturate(190%) brightness(1.18) blur(24px) hue-rotate(180deg) }
+  100%{ filter: saturate(180%) brightness(1.15) blur(24px) hue-rotate(360deg) }
+}
+
+@media (prefers-reduced-motion: no-preference){
+  .navgrid.animate::after{
+    animation: nav-sweep 18s ease-in-out infinite,
+               prism-hue 28s linear infinite;
+    animation-delay: 1.6s, 0s;
+    opacity:1; /* 🔥 haz visible */
+  }
+}
+
+/* ===== Película de vidrio (blur + reflejos + borde bisel) ===== */
+.glasscoat{
+  position:absolute; inset:0; pointer-events:none; border-radius: 0;
+  /* capa principal translúcida */
+  background:
+    /* brillo superior e inferior (specular) */
+    linear-gradient(to bottom, rgba(255,255,255,.18), transparent 12%) top/100% 60% no-repeat,
+    linear-gradient(to top, rgba(255,255,255,.10), transparent 18%) bottom/100% 42% no-repeat,
+    /* leve tinte frío para vidrio */
+    linear-gradient(0deg, rgba(146,212,255,.06), rgba(146,212,255,.02));
+  backdrop-filter: blur(8px) saturate(115%) contrast(105%);
+  -webkit-backdrop-filter: blur(8px) saturate(115%) contrast(105%);
+  /* Borde 1px con degradado (técnica de máscara) */
+}
+.glasscoat::before{
+  content:""; position:absolute; inset:0; border-radius: inherit; padding:1px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.45), rgba(255,255,255,.18) 30%, rgba(120,180,255,.28) 50%, rgba(255,255,255,.18) 70%, rgba(255,255,255,.45));
+  /* máscara: deja solo el “anillo” de 1px */
+  -webkit-mask: 
+      linear-gradient(#000 0 0) content-box, 
+      linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; 
+          mask-composite: exclude;
+  pointer-events:none;
+  opacity:.8;
+}
+/* brillo diagonal muy suave (reflejo móvil opcional) */
+.glasscoat::after{
+  content:""; position:absolute; inset:-10% -15%; pointer-events:none;
+  background:
+    linear-gradient( 12deg, rgba(255,255,255,.12) 8%, rgba(255,255,255,0) 24%);
+  transform: translate3d(0,0,0);
+  opacity:.6;
+}
+
+/* ===== Grid con sensación de relieve (doble línea) ===== */
+.navgrid::before{
+  content:""; position:absolute; inset:0;
+  /* capa 1: líneas principales cyan/azul */
+  background-image:
+    linear-gradient(to right, rgba(56,189,248,.38) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37,99,235,.30) 1px, transparent 1px);
+  background-size: 28px 28px;
+  /* capa 2 (bisel tenue): desplazada un px, más clara */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.10);
+  mix-blend-mode: plus-lighter;         /* más nítido sobre oscuro */
+  opacity:.95;
+}
+
+/* ===== Grano muy fino para evitar banding y dar materialidad ===== */
+.navnoise{
+  position:absolute; inset:0; pointer-events:none; opacity:.22; mix-blend-mode: overlay;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,.12) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 70% 80%, rgba(0,0,0,.18) 0.5px, transparent 0.6px);
+  background-size: 3px 3px, 5px 5px;
+  filter: contrast(120%) saturate(110%);
+}
+
+/* ===== Afinado general del header para que el color respire ===== */
+header{ background: rgba(2,6,23,0.18); }     /* base oscura sutil */
+
+/* reutiliza el mismo borde/mask en el pill del logo */
+.logo-pill{
+  position:relative; border-radius: 1rem; 
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(6px) saturate(120%);
+}
+.logo-pill::before{
+  content:""; position:absolute; inset:0; border-radius: inherit; padding:1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.5), rgba(120,180,255,.35), rgba(255,255,255,.5));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events:none; opacity:.85;
+}
+.logo-pill::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background: linear-gradient(180deg, rgba(255,255,255,.18), transparent 40%);
+  mix-blend-mode: screen; opacity:.7;
+}
