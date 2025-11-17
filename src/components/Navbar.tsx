@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { NAV } from "@/const/nav";
 import type { NavGroup, NavLeaf, NavTopItem } from "@/types/nav";
@@ -20,6 +20,10 @@ function flattenLeaves(item: NavTopItem): NavLeaf[] {
   if ("groups" in item && item.groups) return item.groups.flatMap((g) => g.items);
   return [];
 }
+
+/** Fondo premium para el navbar (gradiente azul/cian) */
+const NAV_BG =
+  "bg-slate-950/90 bg-[radial-gradient(circle_at_0%_0%,rgba(56,189,248,0.22),transparent_55%),radial-gradient(circle_at_100%_0%,rgba(79,70,229,0.26),transparent_55%)]";
 
 /* ===== component ===== */
 export default function Navbar() {
@@ -51,34 +55,46 @@ export default function Navbar() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-slate-950/70 backdrop-blur"
-      style={{ height: "var(--nav-height,64px)" }}
+      className={clsx(
+        "relative fixed inset-x-0 top-0 z-50 border-b border-cyan-500/20 backdrop-blur-xl shadow-[0_18px_45px_rgba(15,23,42,0.9)]",
+        NAV_BG
+      )}
+      style={{ height: "var(--nav-height,72px)" }}
     >
+      {/* Línea de luz inferior */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent"
+      />
+
       <nav
         ref={navRef}
-        className="mx-auto flex h-full max-w-7xl items-center justify-between px-4"
+        className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 lg:px-8"
         aria-label="Principal"
       >
-        {/* Brand */}
-        <Link href="/" className="flex items-center gap-2" aria-label="BitAndes">
+        {/* Brand con marco/glow */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-xl bg-slate-950/80 px-3 py-1.5 ring-1 ring-cyan-400/40 shadow-[0_0_28px_rgba(56,189,248,0.45)]"
+          aria-label="BitAndes"
+        >
           <Image
             src="/assets/logobit.png"
             alt="BitAndes"
             width={120}
             height={28}
             priority
-            className="brightness-[2.2] contrast-[1.2] drop-shadow-[0_0_6px_rgba(0,150,255,0.45)]"
+            className="h-auto w-[120px] brightness-[2.0] contrast-[1.25]"
           />
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden items-center gap-2 md:flex">
+        <ul className="hidden items-center gap-4 md:flex">
           {NAV.map((item, i) => {
-            const leaves = useMemo(() => flattenLeaves(item), [item]);
-            const isActiveTop =
-              isTopLink(item)
-                ? pathname === item.href
-                : leaves.some((l) => pathname.startsWith(l.href));
+            const leaves = flattenLeaves(item);
+            const isActiveTop = isTopLink(item)
+              ? pathname === item.href
+              : leaves.some((l) => pathname.startsWith(l.href));
 
             return (
               <li
@@ -101,22 +117,22 @@ export default function Navbar() {
           <li>
             <Link
               href="/#contacto"
-              className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-4 py-2 text-[13px] font-semibold text-white shadow-md shadow-indigo-500/20"
+              className="group relative inline-flex items-center justify-center gap-1 overflow-hidden rounded-full border border-cyan-400/70 bg-gradient-to-r from-cyan-400 via-sky-500 to-indigo-500 px-5 py-2 text-[13px] font-semibold text-white shadow-[0_0_30px_rgba(56,189,248,0.6)] transition-transform duration-200 hover:-translate-y-[1px] hover:shadow-[0_0_45px_rgba(56,189,248,0.9)]"
             >
-              Cotiza tu web
+              <span>Cotiza tu web</span>
             </Link>
           </li>
         </ul>
 
         {/* Mobile toggler */}
         <button
-          className="grid h-10 w-10 place-items-center md:hidden"
+          className="grid h-10 w-10 place-items-center rounded-full border border-cyan-500/20 bg-slate-900/70 shadow-[0_0_18px_rgba(15,23,42,0.9)] md:hidden"
           aria-label={openMobile ? "Cerrar menú" : "Abrir menú"}
           onClick={() => setOpenMobile((v) => !v)}
           aria-expanded={openMobile}
           aria-controls="mobile-menu"
         >
-          {openMobile ? <X /> : <Menu />}
+          {openMobile ? <X className="w-5" /> : <Menu className="w-5" />}
         </button>
       </nav>
 
@@ -139,14 +155,19 @@ function TopLevel({
 }) {
   const isMenu = "groups" in item || "children" in item;
 
+  const baseClasses =
+    "relative flex items-center gap-1 px-3 py-2.5 text-[13px] font-medium tracking-tight transition-colors";
+
   if (isTopLink(item) && !isMenu) {
     return (
       <div className="flex">
         <Link
           href={item.href}
           className={clsx(
-            "px-3 py-3 text-sm transition-colors",
-            active ? "text-white" : "text-slate-200 hover:text-white"
+            baseClasses,
+            active
+              ? "text-sky-50 after:absolute after:left-3 after:right-3 after:-bottom-1 after:h-[2px] after:rounded-full after:bg-gradient-to-r after:from-cyan-400 after:to-sky-500 after:content-['']"
+              : "text-slate-200 hover:text-sky-50 hover:bg-white/[0.03]"
           )}
         >
           {item.label}
@@ -159,8 +180,12 @@ function TopLevel({
     <div className="flex">
       <button
         className={clsx(
-          "group flex items-center gap-1 px-3 py-3 text-sm transition-colors",
-          expanded || active ? "text-white" : "text-slate-200 hover:text-white"
+          baseClasses,
+          (expanded || active) &&
+            "text-sky-50 after:absolute after:left-3 after:right-3 after:-bottom-1 after:h-[2px] after:rounded-full after:bg-gradient-to-r after:from-cyan-400 after:to-sky-500 after:content-['']",
+          !expanded &&
+            !active &&
+            "text-slate-200 hover:text-sky-50 hover:bg-white/[0.03]"
         )}
         aria-haspopup="menu"
         aria-expanded={expanded}
@@ -188,7 +213,7 @@ function DropdownPanel({ items, show }: { items: NavLeaf[]; show: boolean }) {
     >
       <div
         className={clsx(
-          "w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-xl ring-1 ring-black/20 transition-all",
+          "w-[320px] overflow-hidden rounded-2xl border border-cyan-400/25 bg-slate-950/95 p-2 shadow-2xl ring-1 ring-cyan-500/20 transition-all",
           show ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
         )}
         role="menu"
@@ -212,7 +237,7 @@ function MegaPanel({ groups, show }: { groups: NavGroup[]; show: boolean }) {
     >
       <div
         className={clsx(
-          "grid w-[720px] grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-slate-900/95 p-4 shadow-xl ring-1 ring-black/20 transition-all md:grid-cols-3",
+          "grid w-[720px] grid-cols-1 gap-4 rounded-2xl border border-cyan-400/25 bg-slate-950/95 p-4 shadow-2xl ring-1 ring-cyan-500/20 transition-all md:grid-cols-3",
           show ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
         )}
         role="menu"
@@ -250,13 +275,13 @@ function Leaf({ link }: { link: NavLeaf }) {
       className={clsx(
         "flex items-start gap-3 rounded-lg px-2 py-2.5 text-sm transition-colors",
         isActive
-          ? "bg-white/[0.06] text-white"
-          : "text-slate-200 hover:bg-white/[0.05] hover:text-white"
+          ? "bg-cyan-500/15 text-sky-50"
+          : "text-slate-200 hover:bg-white/[0.05] hover:text-sky-50"
       )}
       role="menuitem"
     >
       {Icon ? (
-        <span className="mt-0.5 rounded-md bg-white/[0.04] p-1.5">
+        <span className="mt-0.5 rounded-md bg-white/[0.04] p-1.5 text-cyan-300">
           <Icon size={16} />
         </span>
       ) : null}
@@ -268,7 +293,7 @@ function Leaf({ link }: { link: NavLeaf }) {
               className={clsx(
                 "rounded-full px-1.5 py-0.5 text-[10px]",
                 link.badge.tone === "brand"
-                  ? "bg-indigo-500/20 text-indigo-300"
+                  ? "bg-cyan-500/20 text-cyan-200"
                   : "bg-white/10 text-slate-300"
               )}
             >
@@ -300,7 +325,9 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
       id="mobile-menu"
       className={clsx(
         "md:hidden transition-[max-height] duration-300",
-        open ? "max-h-[85vh] overflow-auto border-t border-white/10 bg-slate-950/95" : "max-h-0 overflow-hidden"
+        open
+          ? "max-h-[85vh] overflow-auto border-t border-cyan-500/20 bg-slate-950/95 bg-[radial-gradient(circle_at_0%_0%,rgba(56,189,248,0.18),transparent_55%),radial-gradient(circle_at_100%_0%,rgba(79,70,229,0.22),transparent_55%)] backdrop-blur-xl"
+          : "max-h-0 overflow-hidden"
       )}
     >
       <ul className="px-4 py-3">
@@ -315,8 +342,10 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                   onClick={onClose}
                   href={item.href}
                   className={clsx(
-                    "block rounded-lg px-3 py-2 transition-colors",
-                    active ? "bg-white/[0.06] text-white" : "text-slate-200 hover:bg-white/[0.04]"
+                    "block rounded-lg px-3 py-2 text-sm transition-colors",
+                    active
+                      ? "bg-cyan-500/20 text-sky-50"
+                      : "text-slate-200 hover:bg-white/[0.04]"
                   )}
                 >
                   {item.label}
@@ -334,15 +363,18 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
             <li key={item.label} className="border-t border-white/5 first:border-t-0">
               <button
                 className={clsx(
-                  "flex w-full items-center justify-between px-3 py-3 transition-colors",
-                  anyActive ? "text-white" : "text-slate-200"
+                  "flex w-full items-center justify-between px-3 py-3 text-sm transition-colors",
+                  anyActive ? "text-sky-50" : "text-slate-200"
                 )}
                 onClick={() => setExpanded(openAcc ? null : i)}
                 aria-expanded={openAcc}
                 type="button"
               >
                 <span>{item.label}</span>
-                <ChevronDown className={clsx("transition-transform", openAcc && "rotate-180")} size={18} />
+                <ChevronDown
+                  className={clsx("transition-transform", openAcc && "rotate-180")}
+                  size={18}
+                />
               </button>
               <div className={clsx(openAcc ? "block" : "hidden")}>
                 {leaves.map((l) => {
@@ -354,7 +386,9 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                       onClick={onClose}
                       className={clsx(
                         "block rounded-lg px-4 py-2 text-sm transition-colors",
-                        activeLeaf ? "bg-white/[0.06] text-white" : "text-slate-300 hover:bg-white/[0.04]"
+                        activeLeaf
+                          ? "bg-cyan-500/20 text-sky-50"
+                          : "text-slate-300 hover:bg-white/[0.04]"
                       )}
                     >
                       {l.label}
@@ -366,11 +400,11 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
           );
         })}
 
-        <li className="mt-2">
+        <li className="mt-3">
           <Link
             href="/#contacto"
             onClick={onClose}
-            className="block rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 px-4 py-2 text-center text-[13px] font-semibold text-white"
+            className="block rounded-xl bg-gradient-to-r from-cyan-400 via-sky-500 to-indigo-500 px-4 py-2 text-center text-[13px] font-semibold text-white shadow-[0_0_26px_rgba(56,189,248,0.8)]"
           >
             Cotiza tu web
           </Link>
